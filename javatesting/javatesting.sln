@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{BE0A4C86-FC82-4F70-8ED6-D24C8B13E7BF}") = "javatesting", "javatesting\javatesting.javaproj", "{B87222A2-BBEF-4235-A2A1-8012B03AAE46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B87222A2-BBEF-4235-A2A1-8012B03AAE46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B87222A2-BBEF-4235-A2A1-8012B03AAE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B87222A2-BBEF-4235-A2A1-8012B03AAE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B87222A2-BBEF-4235-A2A1-8012B03AAE46}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

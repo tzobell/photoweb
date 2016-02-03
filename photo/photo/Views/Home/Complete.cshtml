@@ -1,0 +1,110 @@
+﻿@model photo.Models.Purchase
+@{
+    ViewBag.Title = "Home Page";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div ng-app="Photo" ng-controller="PhotoCtrl" >
+       
+        <div class="container-custom">
+            <fieldset>
+                <ul class="ul-Photos">
+                    
+                    <li class="li-custom" style=" margin-top: 60px; display: -webkit-box;">
+                        <img class="img-responsive" ng-src="{{bigImg}}" />
+                    </li>
+                    <li class="li-custom" style="text-align:left; display:inline-table;" >
+                        <table >
+                            <tr>
+                                <td style="display:inline-block;">
+                                    <table >
+                                        <tr>
+                                            <td style="font-size:medium;">
+                                                @Model.photoName  @Model.size
+                                            </td>
+                                            <td style="font-size:medium;"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:medium;">
+                                                Total: @string.Format("{0:C}", Model.Price)
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="font-size:medium;"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="font-size:medium;">
+                                                @Model.FirstName @Model.LastName
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="font-size:medium;">
+                                                @Model.Line1
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="font-size:medium;">
+                                                @Model.Line2
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="font-size:medium;">
+                                                @Model.City , @Model.State , @Model.postalCode
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size:large;">
+                                               <u>Order Complete</u>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+    </div>
+
+
+}
+<script>
+    angular.module('Photo', []).controller('PhotoCtrl', function ($scope,$http,$window) {
+         $scope.cost = "@Model.cost";
+        $scope.size = "@Model.size";
+        $scope.bigImg;
+        $scope.purchase = "@Model.photoName";
+        $scope.photoName;
+        $scope.fileName;
+
+        $scope.init = function () {
+            var img = $scope.purchase;
+            $http.get("/Home/findImgInfo", { params: { imginfo: img } })
+                .success(function (data) {
+                    $scope.photoName = data.Name;
+                    $scope.fileName = data.FileName
+                    $http.get("/Home/getImgAddress", { params: { fileName: $scope.fileName } })
+                        .success(function (data) {
+                            $scope.bigImg = data[0];
+                        })
+                        .error(function () {
+                            window.alert("could not find image address")
+                        });
+                })
+
+                .error(function () {
+                    window.alert("could not find image")
+                });
+        };
+        $scope.init();
+    });
+
+</script>

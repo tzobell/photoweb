@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "test";
+}
+
+<h2>test</h2>
+
+<script type="text/javascript" src="http://apps.ezprints.com/home/demo-builder-key.ezp"></script>
+<script type="text/javascript">
+    /* NEEDED IN ITEM (18) BELOW
+	var initialPhotoObject = ({
+		id: "1234",
+		screenResUri: "http://ezpservices.com/Assets/Artwork/Utility/SampleSource/Stock/preview/6863946_00000_preview.jpg",
+		printResUri: "http://ezpservices.com/Assets/Artwork/Utility/SampleSource/Stock/full/6863946_00000_thumb.jpg",
+		PrintResWidth: 1000,
+		PrintResHeight: 1000
+	 });
+	*/
+    var app = ezp.apps.createTemplateApp({
+        elementId: 'appDiv',    // (1)
+        width: 900,    // (2)
+        height: 700,    // (3)
+        sku: '10101',   // (4)
+        // showMerchandising: false, // (5)
+        // templateId: '70200-5X7FULLBLEED',  // (6)
+        // initialPhoto: initialPhotoObject, // (18)
+        mediaPickerSources:    // (7)
+		["EZP Services", {
+		    id: "1",
+		    title: "Personal Albums"
+			, iconUri: "http://apps.ezprints.com/mars/2.0/content/assets/icon-ezprints.png"
+                        , collectionsUri: "http://apps.ezprints.com/Assets/Artwork/Utility/SampleSource/Source.xml"
+		}],
+        comboTrayInitialAssetCollectionUri: "http://ezpservices.com/Assets/Artwork/Utility/SampleSource/Stock/StockAlbum.xml",    // (8)
+        readyCallback: true,   // (9)
+        // templatesUrl: "http://apps.ezprints.com/mars/2.0/content/fullbleedtemplates.xml", // (10)
+        addToCartCallback: addToCartComplete // (11)
+    });
+    function addToCartComplete(projectId, productSku, thumbUrl) // (12)
+    {
+        //alert("The project was saved with project id " + projectId + " and the sku " + productSku);
+        //alert("A thumbnail was saved for this project at this url: " + thumbUrl + ".");
+    }
+     // (13)
+	 function setImage(photo)
+	 {
+	 app.setPhoto('http://ezpservices.com/Assets/Artwork/Utility/SampleSource/Stock/preview/6863947_00000_preview.jpg');
+	 }
+	 
+     // (14)
+	 function changeTemplate(sku, templateId)
+	 {
+	 app.setSku('70210', 'Sailannounce_5x721');
+	 }
+	 
+     // (15)
+	 function loadPID(projectId)
+	 {
+	 app.load("ac68af39-009a-4e77-b235-3275987494ff");
+	 }
+	 
+     // (16)
+	 function changePhotoDetail(myMediaObject)
+	 {
+	 app.setPhoto(myMediaObject);
+	 }
+	 var myMediaObject = ({
+	 id: "1234",
+	 screenResUri: "http://ezpservices.com/Assets/Artwork/Utility/SampleSource/Stock/preview/6863946_00000_preview.jpg",
+	 printResUri: "http://ezpservices.com/Assets/Artwork/Utility/SampleSource/Stock/full/6863946_00000_thumb.jpg",
+	 PrintResWidth: 1000,
+	PrintResHeight: 1000
+	 });
+	 
+     // (17)
+	 function changeSku(sku)
+	 {
+	 app.setSku(sku);
+	 }
+	 function changePhoto(photo)
+	 {
+	 app.setPhoto(photo);
+	 }
+	 
+</script>
+
+
+
+<div id="appDiv">
+    <a href="http://www.adobe.com/go/getflashplayer">
+        <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+    </a>
+</div>
