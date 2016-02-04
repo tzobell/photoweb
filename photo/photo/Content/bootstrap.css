@@ -4647,7 +4647,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
 
 .navbar-inverse .navbar-nav > li > a:hover,
 .navbar-inverse .navbar-nav > li > a:focus {
-  color: #000;
+  color:gray;
   background-color: transparent;
 }
 
@@ -4671,11 +4671,11 @@ textarea.input-group-sm > .input-group-btn > .btn {
 
 .navbar-inverse .navbar-toggle:hover,
 .navbar-inverse .navbar-toggle:focus {
-  background-color: #333333;
+  background-color:white;
 }
 
 .navbar-inverse .navbar-toggle .icon-bar {
-  background-color: #999999;
+  background-color:black;
 }
 
 .navbar-inverse .navbar-collapse,

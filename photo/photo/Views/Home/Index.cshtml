@@ -5,70 +5,16 @@
 <div ng-app="Photo" ng-controller="PhotoCtrl">
     <div class="container-custom">
         <div id="uldiv">
+            @*display photos to be clicked on*@
             <ul class="ul-Photos">
-
                 <li ng-repeat="p in photos" class="li-custom"><div class="button-custom" data-toggle="modal" data-target="#myModal" ng-click="open(p)"><img class="img-responsive" ng-src="{{p.FileLocation}}" /></div></li>
-
-
-
             </ul>
         </div>
     </div>
 
-    @*<div id="myModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
 
 
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">{{photoInfo.Name}}</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div id="uldivA">
-                            <div class="div-custom">
-                                <img class="img-responsiveB" ng-src="{{bigImg}}" />
-                            </div>
-                        </div>
-                        <form class="left name=" printform">
-                            <table class="table-custom">
-                                <tr>
-                                    <td class="td-customD">
-                                        <label>Size :</label>
-
-                                        <select title="Size" name="selectSize" ng-init="option[0]" ng-model="size" ng-change="UpdateCost()">
-                                            <option value="12.18">12in*18in</option>
-                                            <option value="16.24">16in*24in</option>
-                                            <option value="20.30">20in*30in</option>
-                                            <option value="24.36">24in*36in</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="td-customD">
-                                        <label>Cost:</label>
-                                        <span class="h5"> ${{cost}} </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="td-customD">
-                                        <input type="submit" value="Buy Now" class="btn-primary" ng-click="buy()" />
-                                    </td>
-                                </tr>
-
-
-                            </table>
-                        </form>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>*@
-
-
-
-
+    @*Modal that popes up when an image is clicked on*@
     <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
             <button type="button" class="close" ng-click="cancel()">&times;</button>
@@ -76,9 +22,8 @@
         </div>
         <div class="modal-body">
             <div id="uldivA">
-                <div class="div-custom">
-                    
-                    <img class="img-responsiveB" ng-src="{{bigImg}}" />
+                <div class="div-custom">                    
+                    <img class="img-responsiveB" ng-src="{{imgAddress}}" />
                 </div>
             </div>
             <form class="left name=" printform">
@@ -86,7 +31,6 @@
                     <tr>
                         <td class="td-customD">
                             <label>Size :</label>
-
                             <select title="Size" name="selectSize" ng-init="option[0]" ng-model="size" ng-change="UpdateCost()">
                                 <option value="12.18">12in*18in</option>
                                 <option value="16.24">16in*24in</option>
@@ -106,33 +50,11 @@
                             <input type="submit" value="Buy Now" class="btn-primary" ng-click="buy()" />
                         </td>
                     </tr>
-
-
                 </table>
             </form>
-        </div>
-
-        @*<div class="modal-footer">
-                <button class="btn btn-primary" ng-click="ok()">OK</button>
-                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-            </div>*@
-    </script>
-
-    @*<button class="btn btn-default" ng-click="open()">Open me!</button>
-        <button class="btn btn-default" ng-click="open('lg')">Large modal</button>
-        <button class="btn btn-default" ng-click="open('sm')">Small modal</button>
-        <button class="btn btn-default" ng-click="toggleAnimation()">Toggle Animation ({{ animationsEnabled }})</button>
-        <div ng-show="selected">Selection from a modal: {{ selected }}</div>*@
-
-
-
+        </div>       
+    </script>  
 </div>
-
-
-
-
-
-
 
 
 <script>
@@ -140,43 +62,30 @@
 
         $scope.cost = "35.00";
         $scope.size = "12.18";
-        $scope.photos = @Html.Action("getImgs")
-        $scope.bigImg = $scope.photos[0];
+        $scope.photos = @Html.Action("GetImgs")
+        $scope.imgAddress = $scope.photos[0];
         $scope.photoInfo;
 
         /**************modal start************/
         $scope.animationsEnabled = true;
+        /*When image is clicked, open is calleda and passed the information of the image passed and creates modal popup*/
         $scope.open = function (p) {
-            $scope.bigImg = p.FileLocation;
+            $scope.imgAddress = p.FileLocation;
            
-            var modalInstance = $modal.open({
-               
+            var modalInstance = $modal.open({               
                 animation: $scope.animationsEnabled,
                 templateUrl: 'myModalContent.html',
-                controller: 'ModalInstanceCtrl',
-                
+                controller: 'ModalInstanceCtrl',                
                 resolve: {
-                    bigImg: function () { return $scope.bigImg; },
-                    photoInfo: function () { return p;}
-                    
-                    //photoInfo: function () {
-
-                    //   return  $http.get("/Home/getImgInfo", { params: { imginfo: img } })
-                    //        .success(function (data) {
-                    //            $scope.photoInfo = data;
-                    //            window.alert("first " + $scope.photoInfo.Name);
-                    //            return $scope.photoInfo.Name;
-                    //        })
-                    //        .error(function () { return ""; });
-
-                        
-                    //}
+                    imgAddress: function () { return $scope.imgAddress; },
+                    photoInfo: function () { return p; }
                 }
             });
 
             modalInstance.result.then(function (selectedItem) {
                 $scope.selected = selectedItem;
-            }, function () {
+            },
+            function () {
                 $log.info('Modal dismissed at: ' + new Date());
             });
         };
@@ -185,58 +94,24 @@
             $scope.animationsEnabled = !$scope.animationsEnabled;
         };
         /**************modal end************/
-
-        $scope.showImg = function (img) {
-            $scope.bigImg = img;
-            $http.get("/Home/getImgInfo", { params: { imginfo: img } }).success(function (data) {
-                $scope.photoInfo = data;
-               
-            })
-        .error(function () { });
-        }
-
-
-        $scope.UpdateCost = function () {
-            if ($scope.size == "12.18") { $scope.cost = "35.00"; }
-            if ($scope.size == "16.24") { $scope.cost = "70.00"; }
-            if ($scope.size == "20.30") { $scope.cost = "100.00"; }
-            if ($scope.size == "24.36") { $scope.cost = "136.00"; }
-        };
-
-        $scope.buy = function () {
-            var img = $scope.photoInfo.Name;
-            var sz = $scope.size;
-            var p = $scope.cost;
-            var data ={ photoname: img, size: sz, cost: p };
-            $http.post("/Home/Purchase", data)
-            .success(function (data) {
-                var url = data;
-                $window.location.href = url;
-            })
-            .error(function (data, status, headers, config) {
-                window.alert(data);
-            });
-
-        };
     });
 
 
-    angular.module('ui.bootstrap').controller('ModalInstanceCtrl', function ($scope, $window,$http, $modalInstance, bigImg,photoInfo) {
-        $scope.bigImg = bigImg;      
+    angular.module('ui.bootstrap').controller('ModalInstanceCtrl', function ($scope, $window,$http, $modalInstance, imgAddress,photoInfo) {
+        $scope.imgAddress = imgAddress;      
         $scope.photoInfo = photoInfo;
         $scope.cost = "35.00";
         $scope.size = "12.18";
         $scope.init = function () {
-            $http.get("/Home/getImgInfo", { params: { imginfo: bigImg } })
+            $http.get("/Home/FindImageByFileName", { params: { imginfo: imgAddress } })
           .success(function (data) {
               $scope.photoInfo = data;
-              
-
           })
           .error(function () { return ""; });
         }
+
+        /*pass information about image being bought and pass to Purchase in controller which returns address to paypal site to go through with payment*/
         $scope.buy = function () {
-            
             var img = $scope.photoInfo.Name;
             var sz = $scope.size;
             var p = $scope.cost;
@@ -252,17 +127,19 @@
             });
         };
 
+        /*close modal */
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
 
+        /*update cost value based on size that is selected*/
         $scope.UpdateCost = function () {
             if ($scope.size == "12.18") { $scope.cost = "35.00"; }
             if ($scope.size == "16.24") { $scope.cost = "70.00"; }
             if ($scope.size == "20.30") { $scope.cost = "100.00"; }
             if ($scope.size == "24.36") { $scope.cost = "136.00"; }
         };
-       // $scope.init();
+       
     });
 
 

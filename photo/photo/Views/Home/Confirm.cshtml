@@ -13,7 +13,7 @@
             <fieldset>
                 <ul class="ul-Photos">
                     <li class="li-custom" style=" margin-top: 60px; display: -webkit-box;">
-                        <img class="img-responsive" ng-src="{{bigImg}}" />
+                        <img class="img-responsive" ng-src="{{imgAddress}}" />
                     </li>
                     <li class="li-custom" style="text-align:left; display:inline-table;" >
                         <table >
@@ -83,38 +83,33 @@
 }
 <script>
     angular.module('Photo', []).controller('PhotoCtrl', function ($scope,$http,$window) {
-
          $scope.cost = "@Model.cost";
         $scope.size = "@Model.size";
-        $scope.bigImg;
+        $scope.imgAddress;
         $scope.purchase = "@Model.photoName";
         $scope.photoName;
         $scope.fileName;
 
-
-
-        $scope.init = function () {           
+        $scope.init = function () {
             var img = $scope.purchase;
-            $http.get("/Home/findImgInfo", { params: { imginfo: img } })
+            //get image info and initilize photoName and fileName
+            $http.get("/Home/FindImageByName", { params: { imgInfo: img } })
                 .success(function (data) {
                     $scope.photoName = data.Name;
-                    $scope.fileName = data.FileName               
-                    $http.get("/Home/getImgAddress", { params: { fileName: $scope.fileName } })
-
+                    $scope.fileName = data.FileName
+                    //get the address that the image is at and initilize imgAddress
+                    $http.get("/Home/GetImgAddress", { params: { fileName: $scope.fileName } })
                         .success(function (data) {
-                            $scope.bigImg = data[0];
+                            $scope.imgAddress = data[0];
                         })
                         .error(function () {
                             window.alert("could not find image address")
                         });
                 })
-
                 .error(function () {
                     window.alert("could not find image")
                 });
-
-
-        }; 
+        };
         $scope.init();
     });
 

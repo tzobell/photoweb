@@ -13,8 +13,8 @@ namespace photo.Controllers
 {
     public class HomeController : Controller
     {
-        private static OAuthTokenCredential oauth;
-        private PhotographsDBEntities db = new PhotographsDBEntities();
+        
+        private PhotographsDBEntities db = new PhotographsDBEntities();        
 
         public ActionResult Index()
         {
@@ -38,19 +38,15 @@ namespace photo.Controllers
             return View();
         }
 
+        /// <summary>
+        /// gets information for each photo in PhotographsDBEntities db, and locates the address
+        /// that each photo is located at 
+        /// </summary>
+        /// <returns>returns list of all the image info </returns>
         [HttpGet]
-        public string getImgs()
+        public string GetImgs()
         {
-            List<ImageInfo> stuff = new List<ImageInfo>();
-            Uri originalUri = System.Web.HttpContext.Current.Request.Url;
-            string auth = Request.Url.LocalPath;
-            string path = originalUri.AbsoluteUri;
-            string root = path.Replace(auth, "");
-            if (auth == "/") { root = ""; }
-            else { root += "/"; }
-            string a = @"~\Images";
-            DirectoryInfo directory = new DirectoryInfo(Server.MapPath(@"~\Images"));
-            var imgs = directory.GetFiles().ToList();
+            List<ImageInfo> stuff = new List<ImageInfo>();          
 
             foreach (PhotoInfo i in db.PhotoInfoes)
             {
@@ -59,56 +55,64 @@ namespace photo.Controllers
                 ii.Id = i.Id;
                 ii.Info = i.Info;
                 ii.Name = i.Name;
-                ii.FileLocation = root + "Images/" + i.FileName;
+                ii.FileLocation = GetImgFolder() + i.FileName;
                 stuff.Add(ii);
-            }
-
-           // foreach (FileInfo i in imgs)
-           // {
-          //      stuff.Add(root + "Images/" + i.ToString());
-          //  }
+            }           
             var jsonSerialiser = new JavaScriptSerializer();
             var json = jsonSerialiser.Serialize(stuff);
-
             return json;
 
         }
 
 
-        [HttpGet]
-        public string getImgAddress(string fileName)
+        /// <summary>
+        /// find the address that the images are at
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns>string of address for images</returns>
+        private string GetImgFolder()
         {
-            List<string> stuff = new List<string>();
             Uri originalUri = System.Web.HttpContext.Current.Request.Url;
             string auth = originalUri.PathAndQuery;
             string path = originalUri.AbsoluteUri;
             string root = path.Replace(auth, "");
             if (auth == "/") { root = ""; }
             else { root += "/"; }
-            string a = @"~\Images";
+            return root + "Images/";
+        }
+
+        /// <summary>
+        /// finds the address for the image with the file name passed
+        /// </summary>
+        /// <param name="fileName">filename of image</param>
+        /// <returns>the address that the file is located at</returns>
+        [HttpGet]
+        public string GetImgAddress(string fileName)        
+        {
+            List<string> stuff = new List<string>();
             DirectoryInfo directory = new DirectoryInfo(Server.MapPath(@"~\Images"));
             var imgs = directory.GetFiles().ToList();
             foreach (FileInfo i in imgs)
             {
                 if (fileName == i.ToString())
                 {
-                    stuff.Add(root + "Images/" + i.ToString());
+                    stuff.Add(GetImgFolder() + i.ToString());
                 }
             }
-
-
             var jsonSerialiser = new JavaScriptSerializer();
             var json = jsonSerialiser.Serialize(stuff);
-
             return json;
-
         }
 
 
+        /// <summary>
+        /// returns PhotoInfo in dp with the file name passed
+        /// </summary>
+        /// <param name="imgInfo">string of image info</param>
+        /// <returns>returns json string of Photoinfo</returns>
         [HttpGet]
-        public string getImgInfo(string imgInfo)
+        public string FindImageByFileName(string imgInfo)
         {
-
             string fn = Regex.Replace(imgInfo, @"Images/", "");
             PhotoInfo pi = new PhotoInfo();
             foreach (PhotoInfo i in db.PhotoInfoes)
@@ -121,14 +125,18 @@ namespace photo.Controllers
             }
             var jsonSerialiser = new JavaScriptSerializer();
             var json = jsonSerialiser.Serialize(pi);
-
             return json;
         }
 
-        [HttpGet]
-        public string findImgInfo(string imgInfo)
-        {
 
+        /// <summary>
+        /// find the PhotoInfo in dp with the same name as in the string passed
+        /// </summary>
+        /// <param name="imgInfo"></param>
+        /// <returns>json string of photoInfo</returns>
+        [HttpGet]
+        public string FindImageByName(string imgInfo)
+        {
             string fn = Regex.Replace(imgInfo, @"Images/", "");
             PhotoInfo pi = new PhotoInfo();
             foreach (PhotoInfo i in db.PhotoInfoes)
@@ -144,6 +152,12 @@ namespace photo.Controllers
 
             return json;
         }
+
+
+        /// <summary>
+        /// gets acces token and creates apiContext for Paypal api
+        /// </summary>
+        /// <returns>ApiContext</returns>
         private APIContext GetAPIContext()
         {
             Dictionary<string, string> sdkConfig = new Dictionary<string, string>();
@@ -153,23 +167,22 @@ namespace photo.Controllers
             return apiContext;
         }
 
+
+        /// <summary>
+        /// creates a transaction for photo with photoname at the size and cost passed to be viewed and payed for in paypal
+        /// </summary>
+        /// <param name="photoname">name of photo being bought</param>
+        /// <param name="size">size of photo</param>
+        /// <param name="cost">cost of photo</param>
+        /// <returns>address to be redirected to paypal to view and pay for the photo</returns>
         [HttpPost]
         public string Purchase(string photoname, string size, string cost)
         {
-            Dictionary<string, string> sdkConfig = new Dictionary<string, string>();
+            //Dictionary<string, string> sdkConfig = new Dictionary<string, string>();                      
             //sdkConfig.Add("mode", "sandbox");
-            //oauth = new OAuthTokenCredential("AUFotB09UUG4p70W-HOh23z_-UOXNq25AR8ybXstqYPVLvcAMX6DPEE3FtKQO1w7S953NxNAVCVGQzf7", "EBSCyGJf9V2Wxb1QYILx8pGoQqZaAsK1y9cOTwq9c33-t7Ym4IL1vE3tXsaBd7CtZIX-Ei1rrVtQqlDT", sdkConfig);
-
-            //string accessToken = oauth.GetAccessToken();
-            //Dictionary<string, string> sdkConfig2 = new Dictionary<string, string>();
-            //sdkConfig2.Add("mode", "sandbox");
+            //string accessToken = new OAuthTokenCredential("Ae2ZWMxCl_ueuNy87vcg52hTjX9aVWfnvLQSMjDuTn2sj0crrWYIWwPseO_6H4nLpXKcHE9_DjtrmDEC", "EEmZr7iiuNCksXtPh5NjcVcguVGic0TwCW-f7GFmgfmrG8wBUhn_UJj53OxraTkKijC4UYQHv-fzlH7z", sdkConfig).GetAccessToken();
             //APIContext apiContext = new APIContext(accessToken);
-            //apiContext.Config = sdkConfig2;
-          
-            sdkConfig.Add("mode", "sandbox");
-            string accessToken = new OAuthTokenCredential("Ae2ZWMxCl_ueuNy87vcg52hTjX9aVWfnvLQSMjDuTn2sj0crrWYIWwPseO_6H4nLpXKcHE9_DjtrmDEC", "EEmZr7iiuNCksXtPh5NjcVcguVGic0TwCW-f7GFmgfmrG8wBUhn_UJj53OxraTkKijC4UYQHv-fzlH7z", sdkConfig).GetAccessToken();
-            APIContext apiContext = new APIContext(accessToken);
-
+            APIContext apiContext = GetAPIContext();
             Amount amnt = new Amount();
             amnt.currency = "USD";
             amnt.total = cost;
@@ -199,9 +212,9 @@ namespace photo.Controllers
             payr.payment_method = "paypal";
             payr.payer_info = new PayerInfo();
             RedirectUrls redirUrls = new RedirectUrls();
-            redirUrls.cancel_url = Request.Url + ""; //"https:devtools-paypal.com/guide/pay_paypal/dotnet?cancel=true";
+            redirUrls.cancel_url = Request.Url + ""; 
             string tempurl = "http://" + Request.Url.Authority + "/Home/Confirm";
-            redirUrls.return_url = tempurl;// Request.Url.Host + "/Donate/complete";//Html.ActionLink("completed", "complete")//Request.Url + "/complete"; //"https:devtools-paypal.com/guide/pay_paypal/dotnet?success=true";
+            redirUrls.return_url = tempurl;
 
             Payment pymnt = new Payment();
             pymnt.intent = "sale";
@@ -227,24 +240,22 @@ namespace photo.Controllers
          
 
 
-        
+        /// <summary>
+        /// parses the paypal paymentID and PayerId from address and finds the payment information to be displayed int the 
+        /// view for the user to confirm or cancel the purchase
+        /// </summary>
+        /// <returns>View(Payment)</returns>
         public ActionResult Confirm()
         {
             Purchase model = new Purchase();
             if (ModelState.IsValid)
-            {
+            {                
                 string paymentId = Request.QueryString["paymentId"];
                 string PayerID = Request.QueryString["PayerID"];
                 model.PayerID = PayerID;
                 model.PaymentId = paymentId;
-
                 APIContext apiContext = GetAPIContext();
-                Payment pymnt = Payment.Get(apiContext, paymentId);
-                //model.City = pymnt.transactions[0].item_list.shipping_address.city;
-                //model.State = pymnt.transactions[0].item_list.shipping_address.state;
-                //model.Line1 = pymnt.transactions[0].item_list.shipping_address.line1;
-                //model.Line2 = pymnt.transactions[0].item_list.shipping_address.line2;
-                //model.postalCode = pymnt.transactions[0].item_list.shipping_address.postal_code;
+                Payment pymnt = Payment.Get(apiContext, paymentId);                
                 model.FirstName = pymnt.payer.payer_info.first_name;
                 model.LastName = pymnt.payer.payer_info.last_name;
                 model.size = pymnt.transactions[0].item_list.items[0].description;
@@ -260,6 +271,11 @@ namespace photo.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Executes the payment and returns view with purchase information 
+        /// </summary>
+        /// <param name="mod">model containing payment information</param>
+        /// <returns>View(model)</returns>
         public ActionResult Complete(Purchase mod)
         {
             Purchase model = mod;
@@ -270,6 +286,5 @@ namespace photo.Controllers
             Payment executedPayment = pymnt.Execute(apiContext, pymntExecution);
             return View(model);
         }
-
     }
 }
